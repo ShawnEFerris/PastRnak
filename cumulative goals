@@ -28,6 +28,7 @@ ggplot(cleaned_data, aes(game_num, goals_at_game)) + geom_bar(stat="identity", c
   theme_minimal()
 
 #create area graph
-ggplot(cleaned_data, aes(game_num, goals_at_game)) + geom_area(fill="black", color="#FFB81C", alpha=.2) +
-  labs(x="Game Number", y="Goals", title = "How David Pastrnak Accumulated Goals in 2019-20") +
+ggplot(cleaned_data, aes(game_num, goals_above_expected)) + geom_area(fill="black", color="#FFB81C", alpha=.2) +
+  labs(x="Game Number", y="Goals Above Expected", title = "How David Pastrnak Accumulated Goals from Shooting Talent in 2019-20") +
   theme_minimal()
+
