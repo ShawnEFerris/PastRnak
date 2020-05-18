@@ -1,0 +1,33 @@
+#if you don’t have it installed already
+install.packages(“tidyverse”)
+
+#load it in
+library(“tidyverse”)
+
+#load in raw data
+raw_data <- read_csv("https://raw.githubusercontent.com/ShawnEFerris/PastRnak/master/EH_game_log_david_pastrnak_box_score_all_regular_2020-05-12.csv")
+
+#clean data by filtering out totals column
+#Create aggregate metrics
+#get rid of the data we don't need
+cleaned_data <- raw_data%>%
+  filter(Date != "Total")%>%
+  mutate(game_num = row_number(),
+         goals_at_game = cumsum(G),
+         goals_above_expected = cumsum(G) - cumsum(ixG))%>%
+  select(game_num, goals_at_game, goals_above_expected)
+  
+#create line graph
+ggplot(cleaned_data, aes(game_num, goals_at_game)) + geom_line(size=1.25) +
+  labs(x="Game Number", y="Goals", title = "How David Pastrnak Accumulated Goals in 2019-20") +
+  theme_minimal()
+  
+#create bar graph
+ggplot(cleaned_data, aes(game_num, goals_at_game)) + geom_bar(stat="identity", color="black", fill="#FFB81C") +
+  labs(x="Game Number", y="Goals", title = "How David Pastrnak Accumulated Goals in 2019-20") +
+  theme_minimal()
+
+#create area graph
+ggplot(cleaned_data, aes(game_num, goals_at_game)) + geom_area(fill="black", color="#FFB81C", alpha=.2) +
+  labs(x="Game Number", y="Goals", title = "How David Pastrnak Accumulated Goals in 2019-20") +
+  theme_minimal()
