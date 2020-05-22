@@ -1,0 +1,22 @@
+#if you don’t have it installed already
+install.packages(“tidyverse”)
+
+#load it in
+library(“tidyverse”)
+
+#load in raw data
+raw_data <- read_csv("https://raw.githubusercontent.com/ShawnEFerris/PastRnak/master/EH_game_log_david_pastrnak_box_score_all_regular_2020-05-12.csv")
+
+#summarise by team
+goals_by_opponent <- raw_data%>%
+  filter(Date != "Total")%>%
+  group_by(Opponent)%>%
+  summarise(G = sum(G),
+            TOI = sum(TOI))
+
+#make bar graph
+ggplot(goals_by_opponent, aes(x = reorder(Opponent, G),y = G, fill=TOI)) + 
+  geom_bar(stat="identity") + coord_flip() +
+  labs(x="Opponent", y="Goals", title="David Pastrnak's 2019-20 Goals by Opponent", fill="Time on Ice") +
+  scale_y_continuous(expand = c(0, 0)) +
+  theme_bw() 
