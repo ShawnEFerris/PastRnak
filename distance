@@ -1,0 +1,41 @@
+#load in play by play data
+pbp_data <- read_csv("https://raw.githubusercontent.com/ShawnEFerris/PastRnak/master/EH_pbp_query_20192020_2020-05-30.csv")
+
+#view head of data
+head(pbp_data)
+
+#filter to just Pastrnak 5v5 unblocked shots
+pasta_shots <- pbp_data %>%
+  filter(event_player_1 == "DAVID.PASTRNAK",
+         game_strength_state == "5v5",
+         event_type != "BLOCK")
+
+#histogram of shot distance
+ggplot(pasta_shots, aes(x=event_distance)) + geom_histogram(binwidth = 5, color="black", fill="#FFB81C") +
+  theme_minimal()
+
+#find average shot distance
+mean(pasta_shots$event_distance)
+
+#density of shot distance split by event type
+ggplot(pasta_shots, aes(x=event_distance, color=event_type)) + geom_density() +
+  scale_color_manual(values = c("blue", "orange", "black")) +
+  theme_minimal()
+
+#group by shot distance and goals vs. expected goals
+shots_by_distance <- pasta_shots%>%
+  mutate(event_distance = round(event_distance, 0))%>%
+  group_by(event_distance)%>%
+  summarise(G = sum(event_type == "GOAL"),
+            shots = n(),
+            sh_per = G / shots,
+            xG = mean(pred_goal))
+
+#plot curves for sh% and xsh%
+shots_by_distance %>%
+  ggplot() + 
+  geom_smooth(aes(event_distance, sh_per), method = loess, se=FALSE, , color="black")+
+  geom_smooth(aes(event_distance, xG), method = loess, se=FALSE, color = "#FFB81C") +
+  labs(x="Event Distance", y="Unblocked Shooting Percentage", 
+       title = "Shooting Percentage (Black) vs. Expected Shooting Percentage (Gold)")+
+  theme_minimal()
